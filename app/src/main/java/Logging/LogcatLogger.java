@@ -22,9 +22,9 @@ public class LogcatLogger implements Logging {
 
     @Override
     public void error(Exception e, Object... args) {
-        error(ERROR_TAG, e.getMessage());
+        this.error(e.getMessage());
         for (StackTraceElement se : e.getStackTrace()) {
-            error(ERROR_TAG, String.format("File: %s, Method: %s, Line: %s", se.getFileName(), se.getMethodName(), se.getLineNumber()));
+            this.error("File: %s, Method: %s, Line: %s", se.getFileName(), se.getMethodName(), se.getLineNumber());
         }
     }
 }
