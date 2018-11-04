@@ -18,7 +18,7 @@ import org.logging.LogManager;
 public class Server extends WebSocketServer {
     public Server(int port) {
         super(new InetSocketAddress(port));
-        this.poll = new Polling(this, 5000);
+        this.poll = new Polling(this, 1000);
         this.pollThread = null;
     }
 
@@ -34,6 +34,7 @@ public class Server extends WebSocketServer {
     @Override
     public void onClose(WebSocket webSocket, int i, String s, boolean b) {
         LogManager.getLogger().info("Client %s disconnected", WSUtils.getStreamFromWS(webSocket));
+        this.poll.removeConnection(webSocket);
     }
 
     @Override
