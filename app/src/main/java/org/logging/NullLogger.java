@@ -1,4 +1,4 @@
-package Logging;
+package org.logging;
 
 public class NullLogger implements Logging {
     @Override

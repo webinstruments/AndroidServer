@@ -1,12 +1,10 @@
-package com.example.lol.androidsocket;
+package org.androidsocket;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import java.io.IOException;
-
-import Logging.LogManager;
-import Logging.LogcatLogger;
+import org.logging.LogManager;
+import org.logging.LogcatLogger;
 
 public class MainActivity extends AppCompatActivity {
     Server s = new Server(12345);
@@ -17,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         LogManager.setLogger(new LogcatLogger());
+        s.setReuseAddr(true);
         s.start();
     }
 

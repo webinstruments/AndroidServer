@@ -1,4 +1,4 @@
-package Logging;
+package org.logging;
 
 public interface Logging {
     String INFO_TAG = "AS_INFO";

@@ -1,8 +1,8 @@
-package Logging;
+package org.logging;
 
 import android.util.Log;
 
-import Logging.Logging;
+import org.logging.Logging;
 
 public class LogcatLogger implements Logging {
     @Override
