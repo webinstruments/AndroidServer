@@ -9,9 +9,7 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
 import java.net.InetSocketAddress;
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,28 +18,27 @@ import org.logging.LogManager;
 public class Server extends WebSocketServer {
     public Server(int port) {
         super(new InetSocketAddress(port));
+        this.poll = new Polling(this, 5000);
+        this.pollThread = null;
     }
 
     @Override
     public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
-        LogManager.getLogger().info("Client %s connected", getAddressFromWS(webSocket));
-        Iterator<String> a = clientHandshake.iterateHttpFields();
+        LogManager.getLogger().info("Client %s connected", WSUtils.getStreamFromWS(webSocket));
         webSocket.send("Hallo Client");
-        List<Draft> d = super.getDraft();
         int uid = android.os.Process.myUid();
         long txBytesInitial = TrafficStats.getUidTxBytes(uid);
         long rxBytesInitial = TrafficStats.getUidRxBytes(uid);
-        webSocket.sendPing();
     }
 
     @Override
     public void onClose(WebSocket webSocket, int i, String s, boolean b) {
-        LogManager.getLogger().info("Client %s disconnected", getAddressFromWS(webSocket));
+        LogManager.getLogger().info("Client %s disconnected", WSUtils.getStreamFromWS(webSocket));
     }
 
     @Override
     public void onMessage(WebSocket webSocket, String s) {
-        LogManager.getLogger().info("Client %s sent a message", getAddressFromWS(webSocket));
+        LogManager.getLogger().info("Client %s sent a message", WSUtils.getStreamFromWS(webSocket));
     }
 
     @Override
@@ -53,12 +50,13 @@ public class Server extends WebSocketServer {
     @Override
     public void onStart() {
         LogManager.getLogger().warning("Server started");
+        pollThread = new Thread(this.poll);
+        pollThread.start();
     }
 
     @Override
-    public void onWebsocketPong( WebSocket webSocket, Framedata f ) {
-        webSocket.send(String.format("%s", new Timestamp(System.currentTimeMillis())));
-        LogManager.getLogger().info("Client %s ping received", getAddressFromWS(webSocket));
+    public void onWebsocketPong(WebSocket webSocket, Framedata f) {
+        this.poll.pongReceived(webSocket);
     }
 
     @Override
@@ -66,10 +64,6 @@ public class Server extends WebSocketServer {
         super.broadcast(text);
     }
 
-    private String getAddressFromWS(WebSocket ws) {
-        if(ws == null && ws.getRemoteSocketAddress() == null) {
-            return "-";
-        }
-        return ws.getRemoteSocketAddress().getAddress().getHostAddress();
-    }
+    private Polling poll;
+    private Thread pollThread;
 }
