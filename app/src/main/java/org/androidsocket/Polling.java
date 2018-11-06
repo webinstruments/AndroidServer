@@ -1,5 +1,7 @@
 package org.androidsocket;
 
+import android.widget.SeekBar;
+
 import org.java_websocket.WebSocket;
 import org.java_websocket.server.WebSocketServer;
 import org.logging.LogManager;
@@ -50,6 +52,10 @@ public class Polling implements Runnable {
         return this.stopped;
     }
 
+    public synchronized void changeTimeout(int value) {
+        this.timeOut = value;
+    }
+
     @Override
     public void run() {
         this.stopped = false;
@@ -66,6 +72,7 @@ public class Polling implements Runnable {
                 e.printStackTrace();
             }
         }
+        LogManager.getLogger().warning("Polling stopped");
     }
 
     private WebSocketServer server;

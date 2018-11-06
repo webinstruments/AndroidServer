@@ -8,6 +8,7 @@ import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.sql.Timestamp;
 import java.util.Iterator;
@@ -16,10 +17,33 @@ import java.util.List;
 import org.logging.LogManager;
 
 public class Server extends WebSocketServer {
-    public Server(int port) {
+    public Server(int port, int timeout) {
         super(new InetSocketAddress(port));
-        this.poll = new Polling(this, 1000);
+        this.poll = new Polling(this, timeout);
         this.pollThread = null;
+        this.stopped = true;
+    }
+
+    public void setTimeout(int value) {
+        this.setConnectionLostTimeout(value / 500);
+        this.poll.changeTimeout(value);
+    }
+
+    public Boolean isRunning() {
+        return !stopped;
+    }
+
+    @Override
+    public void stop() {
+        try {
+            super.stop();
+            this.stopped = true;
+            this.poll.stop();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -51,6 +75,7 @@ public class Server extends WebSocketServer {
     @Override
     public void onStart() {
         LogManager.getLogger().warning("Server started");
+        this.stopped = false;
         pollThread = new Thread(this.poll);
         pollThread.start();
     }
@@ -67,4 +92,5 @@ public class Server extends WebSocketServer {
 
     private Polling poll;
     private Thread pollThread;
+    private Boolean stopped;
 }

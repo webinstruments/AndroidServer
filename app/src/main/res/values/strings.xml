@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">AndroidSocket</string>
+    <string name="btn_start">Start Socket!</string>
+    <string name="btn_stop">Stop Socket!</string>
 </resources>
