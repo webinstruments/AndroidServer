@@ -109,13 +109,13 @@ public class MainActivity extends AppCompatActivity {
         public StartButton(Button b, MainActivity parent) {
             this.button = b;
             this.parent = parent;
-
             this.button.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
             parent.startServer();
+            this.button.setText(R.string.btn_started);
             this.button.setEnabled(false);
         }
 
