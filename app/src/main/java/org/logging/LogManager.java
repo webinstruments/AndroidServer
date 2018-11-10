@@ -15,7 +15,7 @@ public class LogManager {
         return singleton.currentLogger;
     }
 
-    public static void setLogger(Logging l) {
+    synchronized public static void setLogger(Logging l) {
         if(singleton == null) {
             singleton = new LogManager();
         }

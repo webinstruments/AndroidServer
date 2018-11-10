@@ -1,5 +1,12 @@
 <resources>
     <string name="app_name">AndroidSocket</string>
-    <string name="btn_start">Start Socket!</string>
-    <string name="btn_started">Socket already started!</string>
+    <string name="btn_state_stopped">Start Polling!</string>
+    <string name="btn_state_started">Stop Polling!</string>
+    <string name="btn_service_started">Stop Service!</string>
+    <string name="btn_service_stopped">Start Service!</string>
+    <string name="notification_text_started">Service started</string>
+    <string name="notification_clients_connected">Service started</string>
+    <string name="state_started">Polling started</string>
+    <string name="state_stopped">Polling stopped</string>
+    <string name="state_connecting">Service not started</string>
 </resources>

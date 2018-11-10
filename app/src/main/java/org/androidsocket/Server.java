@@ -1,6 +1,7 @@
 package org.androidsocket;
 
 import android.net.TrafficStats;
+import android.support.annotation.Nullable;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.drafts.Draft;
@@ -26,7 +27,15 @@ public class Server extends WebSocketServer {
 
     public void setTimeout(int value) {
         this.setConnectionLostTimeout(value / 500);
-        this.poll.changeTimeout(value);
+        this.poll.setTimeout(value);
+    }
+
+    public int getTimeout() {
+        if(this.poll != null) {
+            return this.poll.getTimeout();
+        } else {
+            return 0;
+        }
     }
 
     public Boolean isRunning() {

@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Polling implements Runnable {
-    public Polling(WebSocketServer server, long timeOut) {
+    public Polling(WebSocketServer server, int timeOut) {
         this.server = server;
         this.timeOut = timeOut;
         this.pollingData = new ConcurrentHashMap<>();
@@ -45,15 +45,19 @@ public class Polling implements Runnable {
     }
 
     public synchronized void stop() {
-        this.stopped = false;
+        this.stopped = true;
     }
 
     private synchronized boolean shouldStop() {
         return this.stopped;
     }
 
-    public synchronized void changeTimeout(int value) {
+    public synchronized void setTimeout(int value) {
         this.timeOut = value;
+    }
+
+    public synchronized int getTimeout() {
+        return this.timeOut;
     }
 
     @Override
@@ -77,6 +81,6 @@ public class Polling implements Runnable {
 
     private WebSocketServer server;
     private Map<WebSocket, Long> pollingData;
-    private long timeOut;
+    private int timeOut;
     private boolean stopped;
 }
