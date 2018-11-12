@@ -12,10 +12,13 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import org.androidsocket.Interfaces.Observer;
+import org.androidsocket.Models.Connection;
 import org.logging.LogManager;
 import org.logging.LogcatLogger;
+import org.w3c.dom.Text;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Observer {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,10 +61,21 @@ public class MainActivity extends AppCompatActivity {
 
         LogManager.setLogger(new LogcatLogger());
 
+        this.statisticsBtn = (Button) findViewById(R.id.btnConnections);
+        this.statisticsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainActivity.this, ConnectionsActivity.class);
+                MainActivity.this.startActivity(i);
+            }
+        });
+
         this.serviceIntent = new Intent(this, WebSocketService.class);
         this.bindService(this.serviceIntent, this.connection, Context.BIND_AUTO_CREATE);
-        this.stateView = (TextView) this.findViewById(R.id.ServerState);
+        this.stateView = (TextView) this.findViewById(R.id.tvServerState);
+        this.connectionView = (TextView) this.findViewById(R.id.tvConnections);
         this.synchronize();
+        Connection.addObserver(this);
     }
 
     @Override
@@ -127,6 +141,25 @@ public class MainActivity extends AppCompatActivity {
             50, 100, 500, 1000, 2000, 5000,
             10000, 20000, 30000, 45000, 60000
     };
+
+    @Override
+    public void update() {
+        if(Connection.count() > 0) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    connectionView.setText(getResources().getString(R.string.active_connections) + " " + Connection.count());
+                }
+            });
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    connectionView.setText(R.string.no_connections);
+                }
+            });
+        }
+    }
 
     class PollSlider implements SeekBar.OnSeekBarChangeListener {
 
@@ -196,8 +229,10 @@ public class MainActivity extends AppCompatActivity {
 
     WebSocketService service;
     TextView stateView;
+    TextView connectionView;
     Button pollingBtn;
     Button serviceBtn;
+    Button statisticsBtn;
     Intent serviceIntent;
     boolean bound = false;
     PollSlider pollSlider;

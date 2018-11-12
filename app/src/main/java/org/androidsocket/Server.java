@@ -11,6 +11,7 @@ import org.java_websocket.server.WebSocketServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.List;
@@ -57,17 +58,21 @@ public class Server extends WebSocketServer {
 
     @Override
     public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
+        LogManager.getLogger().info("Client %s connected", webSocket.toString());
         LogManager.getLogger().info("Client %s connected", WSUtils.getStreamFromWS(webSocket));
         webSocket.send("Hallo Client");
         int uid = android.os.Process.myUid();
         long txBytesInitial = TrafficStats.getUidTxBytes(uid);
         long rxBytesInitial = TrafficStats.getUidRxBytes(uid);
+        org.androidsocket.Models.Connection.addConnection(webSocket);
     }
 
     @Override
     public void onClose(WebSocket webSocket, int i, String s, boolean b) {
+        LogManager.getLogger().info("Client %s disconnected", webSocket.toString());
         LogManager.getLogger().info("Client %s disconnected", WSUtils.getStreamFromWS(webSocket));
         this.poll.removeConnection(webSocket);
+        org.androidsocket.Models.Connection.remove(webSocket);
     }
 
     @Override

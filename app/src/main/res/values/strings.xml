@@ -9,4 +9,7 @@
     <string name="state_started">Polling started</string>
     <string name="state_stopped">Polling stopped</string>
     <string name="state_connecting">Service not started</string>
+    <string name="active_connections">Active connections:</string>
+    <string name="no_connections">No active connections</string>
+    <string name="btn_show_connections">Show connections</string>
 </resources>
