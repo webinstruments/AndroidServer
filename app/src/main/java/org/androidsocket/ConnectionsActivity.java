@@ -17,7 +17,7 @@ public class ConnectionsActivity extends AppCompatActivity {
         TextView text = new TextView(this);
         TableLayout header = (TableLayout) this.findViewById(R.id.tableHeader);
         text.setText("ROW 1");
-        row.addView(row);
+        row.addView(text);
         header.addView(row);
     }
 }

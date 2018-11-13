@@ -1,14 +1,14 @@
 package org.androidsocket;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 
 import org.logging.LogManager;
@@ -20,6 +20,8 @@ public class WebSocketService extends Service {
     private final String ID = UUID.randomUUID().toString();
     private static boolean isStarted = false;
     private Server server;
+    private NotificationManager notificationManager;
+    private NotificationChannel notificationChannel;
 
     public boolean isStarted() {
         return isStarted;
@@ -93,9 +95,18 @@ public class WebSocketService extends Service {
                 this, title, title, contextText, R.mipmap.ic_launcher, pendingIntent, true
         );
 
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if(this.notificationChannel == null) {
+                this.notificationChannel = new NotificationChannel(Constants.CHANNEL_ID, Constants.CHANNEL_DESCRIPTION, NotificationManager.IMPORTANCE_DEFAULT);
+                this.notificationChannel.setDescription(Constants.CHANNEL_DESCRIPTION);
+                if(this.notificationManager == null) {
+                    this.notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                }
+                notificationManager.createNotificationChannel(this.notificationChannel);
+            }
+        }
+
         this.startForeground(Constants.NOTIFICATION_ID, notification);
-        //stopForeground(true);
-        LogManager.getLogger().info("Building Notification...");
     }
 
     public class ASBinder extends Binder {

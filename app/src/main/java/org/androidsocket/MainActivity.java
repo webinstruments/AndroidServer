@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
     public void startServer() {
         if (!this.service.isStarted()) {
-            startService(this.serviceIntent);
+            this.startService();
         }
         this.service.start(12345, this.pollSlider.getValue());
         this.synchronize();
@@ -98,7 +99,11 @@ public class MainActivity extends AppCompatActivity implements Observer {
     }
 
     public void startService() {
-        this.startService(this.serviceIntent);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.startForegroundService(this.serviceIntent);
+        } else {
+            this.startService(this.serviceIntent);
+        }
         this.bound = true;
         synchronize();
     }
