@@ -1,20 +1,15 @@
 package org.androidsocket;
 
 import android.net.TrafficStats;
-import android.support.annotation.Nullable;
 
+import org.androidsocket.Models.ConnectionData;
 import org.java_websocket.WebSocket;
-import org.java_websocket.drafts.Draft;
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.sql.Connection;
-import java.sql.Timestamp;
-import java.util.Iterator;
-import java.util.List;
 
 import org.logging.LogManager;
 
@@ -58,13 +53,12 @@ public class Server extends WebSocketServer {
 
     @Override
     public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
-        LogManager.getLogger().info("Client %s connected", webSocket.toString());
         LogManager.getLogger().info("Client %s connected", WSUtils.getStreamFromWS(webSocket));
         webSocket.send("Hallo Client");
         int uid = android.os.Process.myUid();
         long txBytesInitial = TrafficStats.getUidTxBytes(uid);
         long rxBytesInitial = TrafficStats.getUidRxBytes(uid);
-        org.androidsocket.Models.Connection.addConnection(webSocket);
+        ConnectionData.addConnection(webSocket);
     }
 
     @Override
@@ -72,7 +66,7 @@ public class Server extends WebSocketServer {
         LogManager.getLogger().info("Client %s disconnected", webSocket.toString());
         LogManager.getLogger().info("Client %s disconnected", WSUtils.getStreamFromWS(webSocket));
         this.poll.removeConnection(webSocket);
-        org.androidsocket.Models.Connection.remove(webSocket);
+        ConnectionData.remove(webSocket);
     }
 
     @Override

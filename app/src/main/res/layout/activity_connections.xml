@@ -8,7 +8,6 @@
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:id="@+id/tableHeader">
-
         <ScrollView>
             <TableLayout
                 android:layout_width="match_parent"

@@ -14,10 +14,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import org.androidsocket.Interfaces.Observer;
-import org.androidsocket.Models.Connection;
+import org.androidsocket.Models.ConnectionData;
 import org.logging.LogManager;
 import org.logging.LogcatLogger;
-import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity implements Observer {
 
@@ -76,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
         this.stateView = (TextView) this.findViewById(R.id.tvServerState);
         this.connectionView = (TextView) this.findViewById(R.id.tvConnections);
         this.synchronize();
-        Connection.addObserver(this);
+        ConnectionData.addObserver(this);
     }
 
     @Override
@@ -149,11 +148,11 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
     @Override
     public void update() {
-        if(Connection.count() > 0) {
+        if(ConnectionData.count() > 0) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    connectionView.setText(getResources().getString(R.string.active_connections) + " " + Connection.count());
+                    connectionView.setText(getResources().getString(R.string.active_connections) + " " + ConnectionData.count());
                 }
             });
         } else {

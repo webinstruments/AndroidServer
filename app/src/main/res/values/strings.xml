@@ -12,4 +12,7 @@
     <string name="active_connections">Active connections:</string>
     <string name="no_connections">No active connections</string>
     <string name="btn_show_connections">Show connections</string>
+    <string name="table_header_client">Client</string>
+    <string name="table_header_datetime">Connected since</string>
+    <string name="table_header_average">Ø delay</string>
 </resources>
