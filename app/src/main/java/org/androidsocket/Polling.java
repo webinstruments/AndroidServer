@@ -2,6 +2,7 @@ package org.androidsocket;
 
 import android.widget.SeekBar;
 
+import org.androidsocket.Models.ConnectionData;
 import org.java_websocket.WebSocket;
 import org.java_websocket.server.WebSocketServer;
 import org.logging.LogManager;
@@ -26,6 +27,8 @@ public class Polling implements Runnable {
             socket.sendPing();
         } else {
             LogManager.getLogger().warning("Key with connection %s already exists", WSUtils.getStreamFromWS(socket));
+            ConnectionData.addMiss(socket);
+            this.pollingData.remove(socket);
         }
     }
 
@@ -33,6 +36,7 @@ public class Polling implements Runnable {
         LogManager.getLogger().info("2_Pong from client %s received", WSUtils.getStreamFromWS(socket));
         if (this.pollingData.containsKey(socket)) {
             long elapsed = System.currentTimeMillis() - this.removeConnection(socket);
+            ConnectionData.addStreamAndDelay(socket, elapsed);
             LogManager.getLogger().info("3_Elapsed time %s ms", elapsed);
         } else {
             //warning will also be called if keep-alive-pings by the server are sent. -> Removed from library

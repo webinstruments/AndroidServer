@@ -11,6 +11,7 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 
+import org.androidsocket.Activities.MainActivity;
 import org.logging.LogManager;
 
 import java.util.UUID;
@@ -49,7 +50,6 @@ public class WebSocketService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        this.setNotification();
         return Service.START_STICKY;
     }
 
@@ -110,7 +110,7 @@ public class WebSocketService extends Service {
     }
 
     public class ASBinder extends Binder {
-        WebSocketService getService() {
+        public WebSocketService getService() {
             return WebSocketService.this;
         }
     }

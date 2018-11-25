@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TableLayout
+    <!--TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
@@ -17,6 +17,10 @@
             </TableLayout>
         </ScrollView>
 
-    </TableLayout>
+    </TableLayout-->
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lvConnections"></ListView>
 
 </LinearLayout>

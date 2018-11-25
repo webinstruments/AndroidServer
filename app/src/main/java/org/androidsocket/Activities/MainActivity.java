@@ -1,4 +1,4 @@
-package org.androidsocket;
+package org.androidsocket.Activities;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -14,7 +14,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import org.androidsocket.Interfaces.Observer;
+import org.androidsocket.Models.ActiveConnection;
 import org.androidsocket.Models.ConnectionData;
+import org.androidsocket.R;
+import org.androidsocket.WebSocketService;
 import org.logging.LogManager;
 import org.logging.LogcatLogger;
 
@@ -49,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
             @Override
             public void onClick(View view) {
                 Button btn = (Button) view;
-                if(MainActivity.this.bound) {
+                if (MainActivity.this.bound) {
                     MainActivity.this.stopService();
                     btn.setText(R.string.btn_service_stopped);
                 } else {
@@ -75,13 +78,18 @@ public class MainActivity extends AppCompatActivity implements Observer {
         this.stateView = (TextView) this.findViewById(R.id.tvServerState);
         this.connectionView = (TextView) this.findViewById(R.id.tvConnections);
         this.synchronize();
-        ConnectionData.addObserver(this);
     }
 
     @Override
     protected void onStop() {
-        LogManager.getLogger().info("OnStop");
         super.onStop();
+        ConnectionData.removeObserver(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        ConnectionData.addObserver(this);
     }
 
     public void startServer() {
@@ -98,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
     }
 
     public void startService() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             this.startForegroundService(this.serviceIntent);
         } else {
             this.startService(this.serviceIntent);
@@ -148,21 +156,15 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
     @Override
     public void update() {
-        if(ConnectionData.count() > 0) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    connectionView.setText(getResources().getString(R.string.active_connections) + " " + ConnectionData.count());
-                }
-            });
-        } else {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    connectionView.setText(R.string.no_connections);
-                }
-            });
-        }
+        LogManager.getLogger().info("Received update %s", MainActivity.class);
+        final String message = ConnectionData.count() > 0 ?
+                getResources().getString(R.string.active_connections) + " " + ConnectionData.count() : getResources().getString(R.string.no_connections);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                connectionView.setText(message);
+            }
+        });
     }
 
     class PollSlider implements SeekBar.OnSeekBarChangeListener {

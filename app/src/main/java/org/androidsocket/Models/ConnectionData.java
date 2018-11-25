@@ -11,33 +11,41 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionData {
     public static synchronized void addConnection(WebSocket socket) {
-        if (!socketAndDelay.containsKey(getKey(socket))) {
-            socketAndDelay.put(getKey(socket), new ActiveConnection(socket));
+        if (!socketAndDelay.containsKey(socket)) {
+            socketAndDelay.put(socket, new ActiveConnection(socket));
         }
-        notifiyObservers();
+        notifyObservers();
     }
 
     public static synchronized void addStreamAndDelay(WebSocket socket, Long delay) {
-        String key = getKey(socket);
         if (!socketAndDelay.containsKey(socket)) {
-            socketAndDelay.put(key, new ActiveConnection(delay, socket));
+            socketAndDelay.put(socket, new ActiveConnection(delay, socket));
         } else {
-            ActiveConnection value = socketAndDelay.get(key).addLatency(delay);
-            socketAndDelay.put(key, value);
+            ActiveConnection value = socketAndDelay.get(socket).addLatency(delay);
+            socketAndDelay.put(socket, value);
         }
-        notifiyObservers();
+        notifyObservers();
+    }
+
+    public static synchronized long addMiss(WebSocket socket) {
+        if(!socketAndDelay.containsKey(socket)) {
+            addConnection(socket);
+        }
+        long result = socketAndDelay.get(socket).addMiss();
+        notifyObservers();
+        return result;
     }
 
     public static synchronized boolean remove(WebSocket socket) {
-        if (socketAndDelay.containsKey(getKey(socket))) {
-            socketAndDelay.remove(getKey(socket));
-            notifiyObservers();
+        if (socketAndDelay.containsKey(socket)) {
+            socketAndDelay.remove(socket);
+            notifyObservers();
             return true;
         }
         return false;
     }
 
-    public static synchronized Map<String, ActiveConnection> getConnections() {
+    public static synchronized Map<WebSocket, ActiveConnection> getConnections() {
         return socketAndDelay;
     }
 
@@ -45,21 +53,16 @@ public class ConnectionData {
         return socketAndDelay.size();
     }
 
-    public static void notifiyObservers() {
+    private static void notifyObservers() {
         for (Observer obs : observers) {
             obs.update();
         }
     }
 
-    public static Object[][] getTableData() {
-        Object[][] result = new Object[socketAndDelay.size()][3];
-
-        int row = 0, col = 0;
-        for (Map.Entry<String, ActiveConnection> entry : socketAndDelay.entrySet()) {
-            result[row][col++] = entry.getValue().getRemoteAddress() + ":" + entry.getValue().getRemotePort();
-            result[row][col++] = entry.getValue().getAverage();
-            result[row++][col++] = entry.getValue().getDateTime("HH:mm:ss");
-            col %= 3;
+    public static ArrayList<ActiveConnection> getActiveConnections() {
+        ArrayList<ActiveConnection> result = new ArrayList<>();
+        for (Map.Entry<WebSocket, ActiveConnection> entry : socketAndDelay.entrySet()) {
+            result.add(entry.getValue());
         }
 
         return result;
@@ -69,10 +72,10 @@ public class ConnectionData {
         observers.add(observer);
     }
 
-    private static String getKey(WebSocket socket) {
-        return socket.getRemoteSocketAddress().toString();
+    public static void removeObserver(Observer observer) {
+        observers.remove(observer);
     }
 
-    static Map<String, ActiveConnection> socketAndDelay = new ConcurrentHashMap<>();
+    static Map<WebSocket, ActiveConnection> socketAndDelay = new ConcurrentHashMap<>();
     static ArrayList<Observer> observers = new ArrayList<>();
 }

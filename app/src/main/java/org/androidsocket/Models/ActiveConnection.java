@@ -23,6 +23,7 @@ public class ActiveConnection {
         this.remoteAddress = socket.getRemoteSocketAddress().getAddress().toString();
         this.remotePort = socket.getRemoteSocketAddress().getPort();
         this.latencySum = 0L;
+        this.misses = 0L;
     }
 
     public ActiveConnection addLatency(Long latency) {
@@ -31,8 +32,8 @@ public class ActiveConnection {
         return this;
     }
 
-    public double getAverage() {
-        if(latencies.size() == 0)
+    public double getAverageDelay() {
+        if (latencies.size() == 0)
             return 0;
         else
             return latencySum / (double) latencies.size();
@@ -59,6 +60,14 @@ public class ActiveConnection {
         return this.remotePort;
     }
 
+    public long addMiss() {
+        return ++this.misses;
+    }
+
+    public long getMisses() {
+        return this.misses;
+    }
+
     private Date dateTime;
     private ArrayList<Long> latencies;
     private Long latencySum;
@@ -66,4 +75,5 @@ public class ActiveConnection {
     private int remotePort;
     private String localAddress;
     private String remoteAddress;
+    private long misses;
 }
