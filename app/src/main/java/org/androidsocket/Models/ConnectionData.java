@@ -53,12 +53,6 @@ public class ConnectionData {
         return socketAndDelay.size();
     }
 
-    private static void notifyObservers() {
-        for (Observer obs : observers) {
-            obs.update();
-        }
-    }
-
     public static ArrayList<ActiveConnection> getActiveConnections() {
         ArrayList<ActiveConnection> result = new ArrayList<>();
         for (Map.Entry<WebSocket, ActiveConnection> entry : socketAndDelay.entrySet()) {
@@ -68,12 +62,29 @@ public class ConnectionData {
         return result;
     }
 
+    public static ActiveConnection getConnectionFromIndex(int index) {
+        int i = 0;
+        for (Map.Entry<WebSocket, ActiveConnection> entry : socketAndDelay.entrySet()) {
+            if(i++ == index) {
+                return entry.getValue();
+            }
+        }
+
+        return null;
+    }
+
     public static void addObserver(Observer observer) {
         observers.add(observer);
     }
 
     public static void removeObserver(Observer observer) {
         observers.remove(observer);
+    }
+
+    private static void notifyObservers() {
+        for (Observer obs : observers) {
+            obs.update();
+        }
     }
 
     static Map<WebSocket, ActiveConnection> socketAndDelay = new ConcurrentHashMap<>();

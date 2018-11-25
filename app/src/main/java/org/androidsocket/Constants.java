@@ -8,4 +8,5 @@ public final class Constants {
     public static final String CHANNEL_DESCRIPTION = "AndroidSocket";
     public static final String SERVER_PORT = "SERVER_PORT";
     public static final String POLLING_INTERVAL = "POLLING_INTERVAL";
+    public static final String CONNECTION_DETAIL_INTENT_KEY = "ConnectionData";
 }

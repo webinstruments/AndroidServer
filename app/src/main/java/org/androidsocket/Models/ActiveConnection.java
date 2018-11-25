@@ -12,23 +12,30 @@ import java.util.Date;
 public class ActiveConnection {
     public ActiveConnection(Long delay, WebSocket socket) {
         this(socket);
-        latencies.add(delay);
+        this.latencies.add(delay);
     }
 
     public ActiveConnection(WebSocket socket) {
         this.latencies = new ArrayList<>();
-        dateTime = Calendar.getInstance().getTime();
+        this.dateTime = Calendar.getInstance().getTime();
         this.localAddress = socket.getLocalSocketAddress().getAddress().toString();
         this.localPort = socket.getLocalSocketAddress().getPort();
         this.remoteAddress = socket.getRemoteSocketAddress().getAddress().toString();
         this.remotePort = socket.getRemoteSocketAddress().getPort();
         this.latencySum = 0L;
         this.misses = 0L;
+        this.minLatency = 0L;
+        this.maxLatency = 0L;
     }
 
     public ActiveConnection addLatency(Long latency) {
-        latencies.add(latency);
-        latencySum += latency;
+        this.latencies.add(latency);
+        this.latencySum += latency;
+        if(latency > this.maxLatency) {
+            this.maxLatency = latency;
+        } else if(this.minLatency == 0 || this.minLatency > latency) {
+            this.minLatency = latency;
+        }
         return this;
     }
 
@@ -72,9 +79,23 @@ public class ActiveConnection {
         return this.misses;
     }
 
+    public long getMinLatency() {
+        return this.minLatency;
+    }
+
+    public long getMaxLetency() {
+        return this.maxLatency;
+    }
+
+    public ArrayList<Long> getLatencies() {
+        return this.latencies;
+    }
+
     private Date dateTime;
     private ArrayList<Long> latencies;
     private Long latencySum;
+    private Long minLatency;
+    private Long maxLatency;
     private int localPort;
     private int remotePort;
     private String localAddress;

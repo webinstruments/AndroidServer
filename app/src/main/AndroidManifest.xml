@@ -24,7 +24,8 @@
             android:enabled="true"
             android:exported="false" />
 
-        <activity android:name=".Activities.ConnectionsActivity"></activity>
+        <activity android:name=".Activities.ConnectionsActivity" />
+        <activity android:name=".Activities.ConnectionDetailActivity"></activity>
     </application>
 
 </manifest>
