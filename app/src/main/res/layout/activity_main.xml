@@ -19,6 +19,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:id="@+id/tvServerState" />
+        <View style="@style/HorizontalDivider" />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="0dp"

@@ -36,9 +36,11 @@ public class ConnectionAdapter extends ArrayAdapter {
             row = inflater.inflate(this.resourceId, parent, false);
 
             holder = new ViewHolder();
-            holder.tvAddress = (TextView) row.findViewById(R.id.tvAddress);
-            holder.tvDelay = (TextView) row.findViewById(R.id.tvDelay);
-            holder.tvDateTime = (TextView) row.findViewById(R.id.tvDateTime);
+            holder.tvAddress = (TextView) row.findViewById(R.id.tvDataAddress);
+            holder.tvDelay = (TextView) row.findViewById(R.id.tvDataDelay);
+            holder.tvPings = (TextView) row.findViewById(R.id.tvDataPings);
+            holder.tvMisses = (TextView) row.findViewById(R.id.tvDataMisses);
+            holder.tvDateTime = (TextView) row.findViewById(R.id.tvDataDateTime);
 
             row.setTag(holder);
         } else {
@@ -46,10 +48,12 @@ public class ConnectionAdapter extends ArrayAdapter {
         }
 
         ActiveConnection data = connections.get(position);
-        holder.tvAddress.setText(data.getRemoteAddress() + ':' + data.getRemotePort());
+        holder.tvAddress.setText(data.getRemoteAddress().replace("/", "") + ':' + data.getRemotePort());
         DecimalFormat df = new DecimalFormat("#.00");
         holder.tvDelay.setText(df.format(data.getAverageDelay()));
-        holder.tvDateTime.setText(data.getDateTime("dd.MM.yy HH:mm:ss"));
+        holder.tvPings.setText(Long.toString(data.getPingCount()));
+        holder.tvMisses.setText(Long.toString(data.getMisses()));
+        holder.tvDateTime.setText(data.getDateTime("HH:mm:ss"));
 
         return row;
     }
@@ -72,6 +76,8 @@ public class ConnectionAdapter extends ArrayAdapter {
     static class ViewHolder {
         TextView tvAddress;
         TextView tvDelay;
+        TextView tvPings;
+        TextView tvMisses;
         TextView tvDateTime;
     }
 }

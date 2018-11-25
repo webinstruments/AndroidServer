@@ -32,6 +32,10 @@ public class ActiveConnection {
         return this;
     }
 
+    public long getPingCount() {
+        return this.latencies.size() + this.misses;
+    }
+
     public double getAverageDelay() {
         if (latencies.size() == 0)
             return 0;
