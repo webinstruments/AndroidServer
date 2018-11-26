@@ -1,8 +1,7 @@
 package org.androidsocket;
 
-import android.widget.SeekBar;
-
 import org.androidsocket.Models.ConnectionData;
+import org.androidsocket.Utils.WSUtils;
 import org.java_websocket.WebSocket;
 import org.java_websocket.server.WebSocketServer;
 import org.logging.LogManager;

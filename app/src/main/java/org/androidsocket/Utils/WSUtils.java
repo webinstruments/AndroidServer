@@ -1,4 +1,4 @@
-package org.androidsocket;
+package org.androidsocket.Utils;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
 
+import org.androidsocket.Constants;
 import org.java_websocket.WebSocket;
 
 public class WSUtils {

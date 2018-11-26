@@ -15,12 +15,14 @@ import android.widget.Toast;
 import org.androidsocket.ConnectionAdapter;
 import org.androidsocket.Constants;
 import org.androidsocket.Interfaces.Observer;
+import org.androidsocket.Interfaces.TimerObserver;
 import org.androidsocket.Models.ActiveConnection;
 import org.androidsocket.Models.ConnectionData;
 import org.androidsocket.R;
+import org.androidsocket.Utils.UpdateTimer;
 import org.logging.LogManager;
 
-public class ConnectionsActivity extends AppCompatActivity implements Observer {
+public class ConnectionsActivity extends AppCompatActivity implements Observer, TimerObserver {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,23 +41,21 @@ public class ConnectionsActivity extends AppCompatActivity implements Observer {
                 ConnectionsActivity.this.startActivity(intent);
             }
         });
+        this.timer = new UpdateTimer(this, 3000);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         ConnectionData.removeObserver(this);
-        if (this.timer != null) {
-            this.timer.interrupt();
-            this.timer = null;
-        }
+        this.timer.stop();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         ConnectionData.addObserver(this);
-        startTimer(3000);
+        this.timer.start();
     }
 
     @Override
@@ -71,29 +71,14 @@ public class ConnectionsActivity extends AppCompatActivity implements Observer {
         }
     }
 
-    private void startTimer(final long timeout) {
-        if (timer == null) {
-            this.timer = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while (true) {
-                        LogManager.getLogger().info("Hello");
-                        ConnectionsActivity.this.update = true;
-                        ConnectionsActivity.this.update();
-                        try {
-                            Thread.sleep(timeout);
-                        } catch (InterruptedException e) {
-                            return;
-                        }
-                    }
-                }
-            });
-            this.timer.start();
-        }
+    @Override
+    public void onTimerUpdate() {
+        this.update = true;
+        this.update();
     }
 
     private ConnectionAdapter adapter;
     private ListView dataList;
     private boolean update;
-    private Thread timer;
+    private UpdateTimer timer;
 }

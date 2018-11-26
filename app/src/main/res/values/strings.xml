@@ -18,6 +18,6 @@
     <string name="pings">Pings</string>
     <string name="misses">Misses</string>
     <string name="statistics">Pings/Misses %</string>
-    <string name="minimum">min.</string>
-    <string name="maximum">max.</string>
+    <string name="minimum_delay">min. delay</string>
+    <string name="maximum_delay">max. delay</string>
 </resources>

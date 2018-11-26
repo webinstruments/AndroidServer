@@ -5,6 +5,7 @@ import org.java_websocket.WebSocket;
 
 import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -16,7 +17,7 @@ public class ActiveConnection {
     }
 
     public ActiveConnection(WebSocket socket) {
-        this.latencies = new ArrayList<>();
+        this.latencies = new ArrayDeque<>();
         this.dateTime = Calendar.getInstance().getTime();
         this.localAddress = socket.getLocalSocketAddress().getAddress().toString();
         this.localPort = socket.getLocalSocketAddress().getPort();
@@ -29,7 +30,7 @@ public class ActiveConnection {
     }
 
     public ActiveConnection addLatency(Long latency) {
-        this.latencies.add(latency);
+        this.latencies.addFirst(latency);
         this.latencySum += latency;
         if(latency > this.maxLatency) {
             this.maxLatency = latency;
@@ -88,11 +89,10 @@ public class ActiveConnection {
     }
 
     public ArrayList<Long> getLatencies() {
-        return this.latencies;
+        return new ArrayList<Long>(this.latencies);
     }
 
     private Date dateTime;
-    private ArrayList<Long> latencies;
     private Long latencySum;
     private Long minLatency;
     private Long maxLatency;
@@ -101,4 +101,5 @@ public class ActiveConnection {
     private String localAddress;
     private String remoteAddress;
     private long misses;
+    private ArrayDeque<Long> latencies;
 }

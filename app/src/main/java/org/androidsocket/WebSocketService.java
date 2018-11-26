@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.IBinder;
 
 import org.androidsocket.Activities.MainActivity;
+import org.androidsocket.Utils.WSUtils;
 import org.logging.LogManager;
 
 import java.util.UUID;

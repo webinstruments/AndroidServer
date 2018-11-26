@@ -3,6 +3,7 @@ package org.androidsocket;
 import android.net.TrafficStats;
 
 import org.androidsocket.Models.ConnectionData;
+import org.androidsocket.Utils.WSUtils;
 import org.java_websocket.WebSocket;
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ClientHandshake;
