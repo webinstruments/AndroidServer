@@ -1,4 +1,4 @@
-package com.example.lol.androidsocket;
+package org.androidsocket;
 
 import org.junit.Test;
 
