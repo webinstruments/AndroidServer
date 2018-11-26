@@ -78,6 +78,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
         this.stateView = (TextView) this.findViewById(R.id.tvServerState);
         this.connectionView = (TextView) this.findViewById(R.id.tvConnections);
         this.synchronize();
+        this.connections = -1;
+        this.update();
     }
 
     @Override
@@ -156,15 +158,17 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
     @Override
     public void update() {
-        LogManager.getLogger().info("Received update %s", MainActivity.class);
-        final String message = ConnectionData.count() > 0 ?
-                getResources().getString(R.string.active_connections) + " " + ConnectionData.count() : getResources().getString(R.string.no_connections);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                connectionView.setText(message);
-            }
-        });
+        if(this.connections != ConnectionData.count()) {
+            this.connections = ConnectionData.count();
+            final String message = ConnectionData.count() > 0 ?
+                    getResources().getString(R.string.active_connections) + " " + ConnectionData.count() : getResources().getString(R.string.no_connections);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    connectionView.setText(message);
+                }
+            });
+        }
     }
 
     class PollSlider implements SeekBar.OnSeekBarChangeListener {
@@ -233,13 +237,14 @@ public class MainActivity extends AppCompatActivity implements Observer {
         }
     };
 
-    WebSocketService service;
-    TextView stateView;
-    TextView connectionView;
-    Button pollingBtn;
-    Button serviceBtn;
-    Button statisticsBtn;
-    Intent serviceIntent;
-    boolean bound = false;
-    PollSlider pollSlider;
+    private WebSocketService service;
+    private TextView stateView;
+    private TextView connectionView;
+    private Button pollingBtn;
+    private Button serviceBtn;
+    private Button statisticsBtn;
+    private Intent serviceIntent;
+    private boolean bound = false;
+    private PollSlider pollSlider;
+    private int connections;
 }
