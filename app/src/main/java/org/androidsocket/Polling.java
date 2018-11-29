@@ -26,8 +26,13 @@ public class Polling implements Runnable {
             socket.sendPing();
         } else {
             LogManager.getLogger().warning("Key with connection %s already exists", WSUtils.getStreamFromWS(socket));
-            ConnectionData.addMiss(socket);
-            this.pollingData.remove(socket);
+            long elapsed = System.currentTimeMillis() - this.pollingData.get(socket);
+            //ToDo remove hardcoded
+            //Client has 4s at max to response
+            if(elapsed >= 4000) {
+                this.pollingData.remove(socket);
+                ConnectionData.addMiss(socket);
+            }
         }
     }
 

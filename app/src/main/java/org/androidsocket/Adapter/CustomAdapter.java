@@ -1,4 +1,4 @@
-package org.androidsocket;
+package org.androidsocket.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,22 +8,28 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import org.androidsocket.Interfaces.IAdapter;
 import org.androidsocket.Models.ActiveConnection;
 import org.androidsocket.Models.ConnectionData;
+import org.androidsocket.R;
+import org.w3c.dom.Text;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Map;
 
-public class ConnectionAdapter extends ArrayAdapter {
-    private Context context;
+public class CustomAdapter extends ArrayAdapter {
+    private IAdapter adapter;
     private int resourceId;
+    private int[] textViewIds;
     private ArrayList<ActiveConnection> connections;
 
-    public ConnectionAdapter(Context context, int layoutResourceId, ArrayList<ActiveConnection> connections) {
-        super(context, layoutResourceId, connections);
-        this.context = context;
+    public CustomAdapter(IAdapter adapter, int layoutResourceId, int[] textViewIds, ArrayList<ActiveConnection> connections) {
+        super(adapter.getContext(), layoutResourceId, connections);
+        this.adapter = adapter;
         this.resourceId = layoutResourceId;
         this.connections = connections;
+        this.textViewIds = textViewIds;
     }
 
     @Override
@@ -32,15 +38,13 @@ public class ConnectionAdapter extends ArrayAdapter {
         ViewHolder holder = null;
 
         if (row == null) {
-            LayoutInflater inflater = ((Activity) this.context).getLayoutInflater();
+            LayoutInflater inflater = ((Activity) this.adapter.getContext()).getLayoutInflater();
             row = inflater.inflate(this.resourceId, parent, false);
 
-            holder = new ViewHolder();
-            holder.tvAddress = (TextView) row.findViewById(R.id.tvDataAddress);
-            holder.tvDelay = (TextView) row.findViewById(R.id.tvDataDelay);
-            holder.tvPings = (TextView) row.findViewById(R.id.tvDataPings);
-            holder.tvMisses = (TextView) row.findViewById(R.id.tvDataMisses);
-            holder.tvDateTime = (TextView) row.findViewById(R.id.tvDataDateTime);
+            holder = new ViewHolder(this.textViewIds.length);
+            for (int i = 0; i < this.textViewIds.length; ++i) {
+                holder.textViews[i] = (TextView) row.findViewById(this.textViewIds[i]);
+            }
 
             row.setTag(holder);
         } else {
@@ -48,12 +52,11 @@ public class ConnectionAdapter extends ArrayAdapter {
         }
 
         ActiveConnection data = connections.get(position);
-        holder.tvAddress.setText(data.getRemoteAddress().replace("/", "") + ':' + data.getRemotePort());
-        DecimalFormat df = new DecimalFormat("#.00");
-        holder.tvDelay.setText(df.format(data.getAverageDelay()));
-        holder.tvPings.setText(Long.toString(data.getPingCount()));
-        holder.tvMisses.setText(Long.toString(data.getMisses()));
-        holder.tvDateTime.setText(data.getDateTime("HH:mm:ss"));
+        String[] rowData = this.adapter.getRowContent(data);
+
+        for(int i = 0; i < this.textViewIds.length; ++i) {
+            holder.textViews[i].setText(rowData[i]);
+        }
 
         return row;
     }
@@ -73,11 +76,11 @@ public class ConnectionAdapter extends ArrayAdapter {
         return this.connections.size();
     }
 
-    static class ViewHolder {
-        TextView tvAddress;
-        TextView tvDelay;
-        TextView tvPings;
-        TextView tvMisses;
-        TextView tvDateTime;
+    private static class ViewHolder {
+        public ViewHolder(int capacity) {
+            this.textViews = new TextView[capacity];
+        }
+
+        TextView[] textViews;
     }
 }

@@ -1,28 +1,26 @@
 package org.androidsocket.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import org.androidsocket.ConnectionAdapter;
 import org.androidsocket.Constants;
+import org.androidsocket.Adapter.CustomAdapter;
+import org.androidsocket.Interfaces.IAdapter;
 import org.androidsocket.Interfaces.Observer;
 import org.androidsocket.Interfaces.TimerObserver;
 import org.androidsocket.Models.ActiveConnection;
 import org.androidsocket.Models.ConnectionData;
 import org.androidsocket.R;
 import org.androidsocket.Utils.UpdateTimer;
-import org.logging.LogManager;
 
-public class ConnectionsActivity extends AppCompatActivity implements Observer, TimerObserver {
+import java.text.DecimalFormat;
+
+public class ConnectionsActivity extends AppCompatActivity implements Observer, TimerObserver, IAdapter {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +28,13 @@ public class ConnectionsActivity extends AppCompatActivity implements Observer, 
         setContentView(R.layout.activity_connections);
 
         this.dataList = (ListView) findViewById(R.id.lvConnections);
-        this.adapter = new ConnectionAdapter(this, R.layout.connection_data, ConnectionData.getActiveConnections());
+        this.adapter = new CustomAdapter(this, R.layout.connection_data, new int[] {
+                R.id.tvDataAddress,
+                R.id.tvDataDelay,
+                R.id.tvDataPings,
+                R.id.tvDataMisses,
+                R.id.tvDataDateTime,
+        },ConnectionData.getActiveConnections());
         this.dataList.setAdapter(adapter);
         this.update = true;
         this.dataList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -77,7 +81,25 @@ public class ConnectionsActivity extends AppCompatActivity implements Observer, 
         this.update();
     }
 
-    private ConnectionAdapter adapter;
+    @Override
+    public String[] getRowContent(Object rowData) {
+        ActiveConnection data = (ActiveConnection) rowData;
+        DecimalFormat df = new DecimalFormat("#.00");
+        return new String[] {
+                data.getRemoteAddress().replace("/", "") + ':' + data.getRemotePort(),
+                df.format(data.getAverageDelay()),
+                Long.toString(data.getPingCount()),
+                Long.toString(data.getMisses()),
+                data.getDateTime("HH:mm:ss"),
+        };
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
+    }
+
+    private CustomAdapter adapter;
     private ListView dataList;
     private boolean update;
     private UpdateTimer timer;

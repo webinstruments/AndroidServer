@@ -20,10 +20,11 @@ public class Server extends WebSocketServer {
         this.poll = new Polling(this, timeout);
         this.pollThread = null;
         this.stopped = true;
+        //Todo remove hard coded
+        this.setConnectionLostTimeout(300);
     }
 
     public void setTimeout(int value) {
-        this.setConnectionLostTimeout(value / 500);
         this.poll.setTimeout(value);
     }
 
