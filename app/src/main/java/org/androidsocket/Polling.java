@@ -3,6 +3,7 @@ package org.androidsocket;
 import org.androidsocket.Models.ConnectionData;
 import org.androidsocket.Utils.WSUtils;
 import org.java_websocket.WebSocket;
+import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.server.WebSocketServer;
 import org.logging.LogManager;
 
@@ -23,7 +24,11 @@ public class Polling implements Runnable {
         if (!this.pollingData.containsKey(socket)) {
             LogManager.getLogger().info("1_Sending ping to client %s", WSUtils.getStreamFromWS(socket));
             this.pollingData.put(socket, System.currentTimeMillis());
-            socket.sendPing();
+            try {
+                socket.sendPing();
+            } catch (WebsocketNotConnectedException ex) {
+                this.removeConnection(socket);
+            }
         } else {
             LogManager.getLogger().warning("Key with connection %s already exists", WSUtils.getStreamFromWS(socket));
             long elapsed = System.currentTimeMillis() - this.pollingData.get(socket);

@@ -17,6 +17,7 @@ import org.w3c.dom.Text;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class CustomAdapter extends ArrayAdapter {
@@ -25,11 +26,11 @@ public class CustomAdapter extends ArrayAdapter {
     private int[] textViewIds;
     private ArrayList<Object> items;
 
-    public CustomAdapter(IAdapter adapter, int layoutResourceId, int[] textViewIds, Object items) {
-        super(adapter.getContext(), layoutResourceId, (ArrayList<Object>)items);
+    public CustomAdapter(IAdapter adapter, int layoutResourceId, int[] textViewIds, ArrayList items) {
+        super(adapter.getContext(), layoutResourceId, items);
         this.adapter = adapter;
         this.resourceId = layoutResourceId;
-        this.items = (ArrayList<Object>) items;
+        this.items = items;
         this.textViewIds = textViewIds;
     }
 
@@ -62,15 +63,14 @@ public class CustomAdapter extends ArrayAdapter {
         return row;
     }
 
-    public void update(Object items) {
-        ArrayList<Object> listItems = (ArrayList<Object>)items;
-        if (this.items.size() != listItems.size()) {
+    public void update(ArrayList items) {
+        if (this.items.size() != items.size()) {
             super.clear();
-            for (Object item : listItems) {
+            for (Object item : items) {
                 this.add(item);
             }
         }
-        this.items = listItems;
+        this.items = items;
         this.notifyDataSetChanged();
     }
 
