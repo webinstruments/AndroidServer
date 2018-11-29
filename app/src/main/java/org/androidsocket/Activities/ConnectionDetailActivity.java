@@ -17,6 +17,7 @@ import org.androidsocket.Models.ConnectionData;
 import org.androidsocket.Models.Latency;
 import org.androidsocket.R;
 import org.androidsocket.Utils.UpdateTimer;
+import org.logging.LogManager;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -68,6 +69,10 @@ public class ConnectionDetailActivity extends AppCompatActivity implements Obser
     }
 
     private void updateForm(ActiveConnection c) {
+        if(c == null) {
+            LogManager.getLogger().warning("Connection erased");
+            finish();
+        }
         this.addressText.setText(c.getRemoteAddress().replace("/", "") + ":" + c.getRemotePort());
         this.dateTimeText.setText(c.getDateTime("dd.MM.yyyy HH:mm:ss"));
         this.pingsText.setText(Long.toString(c.getPingCount()));
