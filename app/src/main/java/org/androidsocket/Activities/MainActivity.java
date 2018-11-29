@@ -8,6 +8,8 @@ import android.os.Build;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
@@ -27,6 +29,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ConnectionData.initSignal(this);
 
         this.pollSlider = new PollSlider((SeekBar) this.findViewById(R.id.sliderPoll),
                 (TextView) this.findViewById(R.id.tvPoll), 10,
@@ -68,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
         this.statisticsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ConnectionData.count();
                 Intent i = new Intent(MainActivity.this, ConnectionsActivity.class);
                 MainActivity.this.startActivity(i);
             }

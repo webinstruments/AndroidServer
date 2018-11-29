@@ -20,4 +20,8 @@
     <string name="statistics">Pings/Misses %</string>
     <string name="minimum_delay">min. delay</string>
     <string name="maximum_delay">max. delay</string>
+    <string name="bad">bad</string>
+    <string name="medium">medium</string>
+    <string name="good">good</string>
+    <string name="best">best</string>
 </resources>

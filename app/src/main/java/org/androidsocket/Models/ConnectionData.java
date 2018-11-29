@@ -1,5 +1,9 @@
 package org.androidsocket.Models;
 
+import android.content.Context;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
+
 import org.androidsocket.Interfaces.Observer;
 import org.java_websocket.WebSocket;
 
@@ -8,6 +12,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static android.content.Context.TELEPHONY_SERVICE;
 
 public class ConnectionData {
     public static synchronized void addConnection(WebSocket socket) {
@@ -87,6 +93,15 @@ public class ConnectionData {
         }
     }
 
-    static Map<WebSocket, ActiveConnection> socketAndDelay = new ConcurrentHashMap<>();
-    static ArrayList<Observer> observers = new ArrayList<>();
+    public static void initSignal(Context context) {
+        info = new SignalInfo(context);
+        TelephonyManager manager = (TelephonyManager) context.getSystemService(TELEPHONY_SERVICE);
+        manager.listen(ConnectionData.info,
+                PhoneStateListener.LISTEN_SIGNAL_STRENGTHS |
+                        PhoneStateListener.LISTEN_DATA_CONNECTION_STATE);
+    }
+
+    private static Map<WebSocket, ActiveConnection> socketAndDelay = new ConcurrentHashMap<>();
+    private static ArrayList<Observer> observers = new ArrayList<>();
+    private static SignalInfo info;
 }

@@ -9,4 +9,8 @@ public final class Constants {
     public static final String SERVER_PORT = "SERVER_PORT";
     public static final String POLLING_INTERVAL = "POLLING_INTERVAL";
     public static final String CONNECTION_DETAIL_INTENT_KEY = "ConnectionData";
+    public static final short CONNECTION_BAD_THRESHOLD = 5;
+    public static final short CONNECTION_MEDIUM_THRESHOLD = 12;
+    public static final short CONNECTION_GOOD_THRESHOLD = 20;
+    public static final short CONNECTION_BEST_THRESHOLD = 30;
 }
