@@ -92,7 +92,7 @@ public class ActiveConnection extends SignalObserver {
         return this.minLatency;
     }
 
-    public long getMaxLetency() {
+    public long getMaxLatency() {
         return this.maxLatency;
     }
 
