@@ -1,23 +1,28 @@
 package org.androidsocket.Activities;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.androidsocket.Adapter.CustomAdapter;
 import org.androidsocket.Constants;
+import org.androidsocket.Interfaces.IAdapter;
 import org.androidsocket.Interfaces.Observer;
 import org.androidsocket.Interfaces.TimerObserver;
 import org.androidsocket.Models.ActiveConnection;
 import org.androidsocket.Models.ConnectionData;
+import org.androidsocket.Models.Latency;
 import org.androidsocket.R;
 import org.androidsocket.Utils.UpdateTimer;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
-public class ConnectionDetailActivity extends AppCompatActivity implements Observer, TimerObserver {
+public class ConnectionDetailActivity extends AppCompatActivity implements Observer, TimerObserver, IAdapter {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +33,12 @@ public class ConnectionDetailActivity extends AppCompatActivity implements Obser
         this.connectionIndex = extras.getInt(Constants.CONNECTION_DETAIL_INTENT_KEY);
         ActiveConnection c = ConnectionData.getConnectionFromIndex(this.connectionIndex);
         this.latencyListView = (ListView) findViewById(R.id.lvLatencies);
-        this.latencies = new ArrayAdapter<Long>(this, R.layout.latency_item, R.id.tvLatencyItem, c.getLatencies());
+        //this.latencies = new ArrayAdapter<Long>(this, R.layout.latency_item, R.id.tvLatencyItem, c.getLatencies());
+        this.latencies = new CustomAdapter(this, R.layout.latency_item, new int[] {
+                R.id.tvDetailListLatency,
+                R.id.tvDetailListType,
+                R.id.tvDetailListStrength,
+        }, c.getLatencies());
         this.latencyListView.setAdapter(this.latencies);
         this.addressText = (TextView) findViewById(R.id.tvDetailAddress);
         this.dateTimeText = (TextView) findViewById(R.id.tvDetailDateTime);
@@ -78,14 +88,15 @@ public class ConnectionDetailActivity extends AppCompatActivity implements Obser
                 public void run() {
                     ActiveConnection c = ConnectionData.getConnectionFromIndex(ConnectionDetailActivity.this.connectionIndex);
                     ConnectionDetailActivity.this.updateForm(c);
-                    ArrayList<Long> latencies = c.getLatencies();
+                    ArrayList<Latency> latencies = c.getLatencies();
                     if(latencies.size() != ConnectionDetailActivity.this.latencies.getCount()) {
                         ConnectionDetailActivity.this.latencies.clear();
+                        List<Latency> latenciesToUpdate = new ArrayList<>();
                         for(int i = 0; i < latencies.size() && i < 50; ++i) {
-                            ConnectionDetailActivity.this.latencies.add(latencies.get(i));
+                            latenciesToUpdate.add(latencies.get(i));
                         }
+                        ConnectionDetailActivity.this.latencies.update(latencies);
                     }
-                    ConnectionDetailActivity.this.latencies.notifyDataSetChanged();
                     ConnectionDetailActivity.this.update = false;
                 }
             });
@@ -98,9 +109,24 @@ public class ConnectionDetailActivity extends AppCompatActivity implements Obser
         this.update();
     }
 
+    @Override
+    public String[] getRowContent(Object rowData) {
+        Latency l = (Latency)rowData;
+        return new String[] {
+                Long.toString(l.latency),
+                l.serviceName,
+                l.strength
+        };
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
+    }
+
     private int connectionIndex;
     private ListView latencyListView;
-    private ArrayAdapter<Long> latencies;
+    private CustomAdapter latencies;
     private TextView addressText;
     private TextView dateTimeText;
     private TextView pingsText;

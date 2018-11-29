@@ -5,6 +5,7 @@ import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 
 import org.androidsocket.Interfaces.Observer;
+import org.androidsocket.Interfaces.SignalObserver;
 import org.java_websocket.WebSocket;
 
 import java.util.ArrayList;
@@ -99,6 +100,10 @@ public class ConnectionData {
         manager.listen(ConnectionData.info,
                 PhoneStateListener.LISTEN_SIGNAL_STRENGTHS |
                         PhoneStateListener.LISTEN_DATA_CONNECTION_STATE);
+    }
+
+    public static SignalInfo getSignalInfo() {
+        return info;
     }
 
     private static Map<WebSocket, ActiveConnection> socketAndDelay = new ConcurrentHashMap<>();

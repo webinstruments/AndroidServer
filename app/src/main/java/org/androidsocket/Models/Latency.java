@@ -1,13 +1,13 @@
 package org.androidsocket.Models;
 
 public class Latency {
-    public Latency(Long latency, String serviceName, int signalStrength) {
+    public Latency(Long latency, String serviceType, String signalStrength) {
         this.latency = latency;
-        this.serviceName = serviceName;
+        this.serviceName = serviceType;
         this.strength = signalStrength;
     }
 
     public Long latency;
-    public int strength;
+    public String strength;
     public String serviceName;
 }

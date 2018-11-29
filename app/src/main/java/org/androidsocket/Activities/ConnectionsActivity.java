@@ -19,6 +19,7 @@ import org.androidsocket.R;
 import org.androidsocket.Utils.UpdateTimer;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 public class ConnectionsActivity extends AppCompatActivity implements Observer, TimerObserver, IAdapter {
 
@@ -34,7 +35,7 @@ public class ConnectionsActivity extends AppCompatActivity implements Observer, 
                 R.id.tvDataPings,
                 R.id.tvDataMisses,
                 R.id.tvDataDateTime,
-        },ConnectionData.getActiveConnections());
+        }, ConnectionData.getActiveConnections());
         this.dataList.setAdapter(adapter);
         this.update = true;
         this.dataList.setOnItemClickListener(new AdapterView.OnItemClickListener() {

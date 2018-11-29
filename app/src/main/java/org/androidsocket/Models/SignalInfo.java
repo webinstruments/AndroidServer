@@ -11,28 +11,33 @@ import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
 
 import org.androidsocket.Constants;
+import org.androidsocket.Interfaces.SignalObserver;
 import org.androidsocket.R;
 import org.androidsocket.Utils.WSUtils;
 import org.logging.LogManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SignalInfo extends PhoneStateListener {
 
     public SignalInfo(Context context) {
         this.context = context;
+        this.observers = new ArrayList<>();
     }
 
     @Override
     public void onSignalStrengthsChanged(SignalStrength signalStrength) {
         super.onSignalStrengthsChanged(signalStrength);
         this.signalStrength = signalStrength.getGsmSignalStrength();
+        this.update();
         LogManager.getLogger().warning("signalStrength %s", this.getSignalStrength());
     }
 
     public void onDataConnectionStateChanged(int state, int networkType) {
         super.onDataConnectionStateChanged(state, networkType);
         setServiceName(networkType);
+        this.update();
         LogManager.getLogger().warning("serviceName %s", this.serviceName);
     }
 
@@ -76,11 +81,26 @@ public class SignalInfo extends PhoneStateListener {
         }
     }
 
-    public String getService() {
+    public void register(SignalObserver observer) {
+        observers.add(observer);
+    }
+
+    public void unregister(SignalObserver observer) {
+        observers.remove(observer);
+    }
+
+    public String getSignalType() {
         return this.serviceName;
+    }
+
+    private void update() {
+        for (SignalObserver observer: this.observers) {
+            observer.onSignalUpdate(this.getSignalStrength(), this.getSignalType());
+        }
     }
 
     private int signalStrength;
     private String serviceName;
     private Context context;
+    private List<SignalObserver> observers;
 }

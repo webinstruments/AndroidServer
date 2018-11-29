@@ -2,6 +2,7 @@ package org.androidsocket.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.v4.graphics.drawable.IconCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,13 +23,13 @@ public class CustomAdapter extends ArrayAdapter {
     private IAdapter adapter;
     private int resourceId;
     private int[] textViewIds;
-    private ArrayList<ActiveConnection> connections;
+    private ArrayList<Object> items;
 
-    public CustomAdapter(IAdapter adapter, int layoutResourceId, int[] textViewIds, ArrayList<ActiveConnection> connections) {
-        super(adapter.getContext(), layoutResourceId, connections);
+    public CustomAdapter(IAdapter adapter, int layoutResourceId, int[] textViewIds, Object items) {
+        super(adapter.getContext(), layoutResourceId, (ArrayList<Object>)items);
         this.adapter = adapter;
         this.resourceId = layoutResourceId;
-        this.connections = connections;
+        this.items = (ArrayList<Object>) items;
         this.textViewIds = textViewIds;
     }
 
@@ -51,29 +52,36 @@ public class CustomAdapter extends ArrayAdapter {
             holder = (ViewHolder) row.getTag();
         }
 
-        ActiveConnection data = connections.get(position);
+        Object data = items.get(position);
         String[] rowData = this.adapter.getRowContent(data);
 
-        for(int i = 0; i < this.textViewIds.length; ++i) {
+        for (int i = 0; i < this.textViewIds.length; ++i) {
             holder.textViews[i].setText(rowData[i]);
         }
 
         return row;
     }
 
-    public void update(ArrayList<ActiveConnection> connections) {
-        if (this.connections.size() != connections.size()) {
-            this.clear();
-            for (ActiveConnection conn : connections) {
-                this.add(conn);
+    public void update(Object items) {
+        ArrayList<Object> listItems = (ArrayList<Object>)items;
+        if (this.items.size() != listItems.size()) {
+            super.clear();
+            for (Object item : listItems) {
+                this.add(item);
             }
         }
-        this.connections = connections;
+        this.items = listItems;
         this.notifyDataSetChanged();
     }
 
+    @Override
+    public void clear() {
+        super.clear();
+        this.items = new ArrayList<>();
+    }
+
     public int getDataCount() {
-        return this.connections.size();
+        return this.items.size();
     }
 
     private static class ViewHolder {

@@ -1,6 +1,7 @@
 package org.androidsocket.Models;
 
 import org.androidsocket.Interfaces.Observer;
+import org.androidsocket.Interfaces.SignalObserver;
 import org.java_websocket.WebSocket;
 
 import java.net.InetSocketAddress;
@@ -10,13 +11,20 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class ActiveConnection {
+public class ActiveConnection extends SignalObserver {
     public ActiveConnection(Long delay, WebSocket socket) {
         this(socket);
-        this.latencies.add(delay);
+        this.latencies.add(new Latency(delay, super.signalType, super.signalStrength));
+    }
+
+    @Override
+    public void onSignalUpdate(String strength, String type) {
+        super.signalStrength = strength;
+        super.signalType = type;
     }
 
     public ActiveConnection(WebSocket socket) {
+        super();
         this.latencies = new ArrayDeque<>();
         this.dateTime = Calendar.getInstance().getTime();
         this.localAddress = socket.getLocalSocketAddress().getAddress().toString();
@@ -30,7 +38,7 @@ public class ActiveConnection {
     }
 
     public ActiveConnection addLatency(Long latency) {
-        this.latencies.addFirst(latency);
+        this.latencies.addFirst(new Latency(latency,super.signalType, super.signalStrength));
         this.latencySum += latency;
         if(latency > this.maxLatency) {
             this.maxLatency = latency;
@@ -88,8 +96,8 @@ public class ActiveConnection {
         return this.maxLatency;
     }
 
-    public ArrayList<Long> getLatencies() {
-        return new ArrayList<Long>(this.latencies);
+    public ArrayList<Latency> getLatencies() {
+        return new ArrayList<Latency>(this.latencies);
     }
 
     private Date dateTime;
@@ -101,5 +109,5 @@ public class ActiveConnection {
     private String localAddress;
     private String remoteAddress;
     private long misses;
-    private ArrayDeque<Long> latencies;
+    private ArrayDeque<Latency> latencies;
 }
