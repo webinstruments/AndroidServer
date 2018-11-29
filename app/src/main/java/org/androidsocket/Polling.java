@@ -61,16 +61,12 @@ public class Polling implements Runnable {
         this.stopped = true;
     }
 
-    private synchronized boolean shouldStop() {
+    public synchronized boolean shouldStop() {
         return this.stopped;
     }
 
     public synchronized void setTimeout(int value) {
         this.timeOut = value;
-    }
-
-    public synchronized int getTimeout() {
-        return this.timeOut;
     }
 
     @Override

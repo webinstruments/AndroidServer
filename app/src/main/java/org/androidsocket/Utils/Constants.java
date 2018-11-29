@@ -1,4 +1,4 @@
-package org.androidsocket;
+package org.androidsocket.Utils;
 
 public final class Constants {
     public static final String START_SERVICE = "START";

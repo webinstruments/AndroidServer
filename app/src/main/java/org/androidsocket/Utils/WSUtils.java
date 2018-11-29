@@ -9,7 +9,7 @@ import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
 
-import org.androidsocket.Constants;
+import org.androidsocket.Utils.Constants;
 import org.androidsocket.Models.ActiveConnection;
 import org.androidsocket.Models.ConnectionData;
 import org.androidsocket.Models.Latency;

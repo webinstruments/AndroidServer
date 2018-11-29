@@ -15,29 +15,35 @@ import java.net.InetSocketAddress;
 import org.logging.LogManager;
 
 public class Server extends WebSocketServer {
+
     public Server(int port, int timeout) {
         super(new InetSocketAddress(port));
-        this.poll = new Polling(this, timeout);
-        this.pollThread = null;
         this.stopped = true;
+        this.timeout = timeout;
         //Todo remove hard coded
         this.setConnectionLostTimeout(300);
     }
 
     public void setTimeout(int value) {
-        this.poll.setTimeout(value);
+        if(this.poll != null) {
+            this.poll.setTimeout(value);
+        }
+        this.timeout = value;
     }
 
     public int getTimeout() {
-        if(this.poll != null) {
-            return this.poll.getTimeout();
-        } else {
-            return 0;
-        }
+        return this.timeout;
     }
 
-    public Boolean isRunning() {
-        return !stopped;
+    public boolean isRunning() {
+        return !this.stopped;
+    }
+
+    public boolean isPollStarted() {
+        if(this.poll != null) {
+            return !this.poll.shouldStop();
+        }
+        return false;
     }
 
     @Override
@@ -45,12 +51,18 @@ public class Server extends WebSocketServer {
         try {
             super.stop();
             this.stopped = true;
-            this.poll.stop();
+            this.stopPolling();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void start() {
+        super.start();
+        this.stopped = false;
     }
 
     @Override
@@ -85,10 +97,23 @@ public class Server extends WebSocketServer {
     @Override
     public void onStart() {
         LogManager.getLogger().warning("Server started");
-        this.stopped = false;
-        pollThread = new Thread(this.poll);
-        pollThread.start();
     }
+
+    public void startPolling() {
+        if(this.pollThread == null) {
+            this.poll = new Polling(this, this.timeout);
+            this.pollThread = new Thread(this.poll);
+            this.pollThread.start();
+        }
+    }
+
+    public void stopPolling() {
+        if(this.pollThread != null) {
+            this.poll.stop();
+            this.pollThread = null;
+        }
+    }
+
 
     @Override
     public void onWebsocketPong(WebSocket webSocket, Framedata f) {
@@ -102,5 +127,6 @@ public class Server extends WebSocketServer {
 
     private Polling poll;
     private Thread pollThread;
-    private Boolean stopped;
+    private boolean stopped;
+    private int timeout;
 }

@@ -13,7 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.androidsocket.Adapter.CustomAdapter;
-import org.androidsocket.Constants;
+import org.androidsocket.Utils.Constants;
 import org.androidsocket.Interfaces.IAdapter;
 import org.androidsocket.Interfaces.Observer;
 import org.androidsocket.Interfaces.TimerObserver;

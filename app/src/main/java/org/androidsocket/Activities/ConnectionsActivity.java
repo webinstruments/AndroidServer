@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import org.androidsocket.Constants;
+import org.androidsocket.Utils.Constants;
 import org.androidsocket.Adapter.CustomAdapter;
 import org.androidsocket.Interfaces.IAdapter;
 import org.androidsocket.Interfaces.Observer;

@@ -10,7 +10,7 @@ import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
 
-import org.androidsocket.Constants;
+import org.androidsocket.Utils.Constants;
 import org.androidsocket.Interfaces.SignalObserver;
 import org.androidsocket.R;
 import org.androidsocket.Utils.WSUtils;
@@ -31,14 +31,12 @@ public class SignalInfo extends PhoneStateListener {
         super.onSignalStrengthsChanged(signalStrength);
         this.signalStrength = signalStrength.getGsmSignalStrength();
         this.update();
-        LogManager.getLogger().warning("signalStrength %s", this.getSignalStrength());
     }
 
     public void onDataConnectionStateChanged(int state, int networkType) {
         super.onDataConnectionStateChanged(state, networkType);
         setServiceName(networkType);
         this.update();
-        LogManager.getLogger().warning("serviceName %s", this.serviceName);
     }
 
     public void setServiceName(int networkType) {

@@ -36,16 +36,31 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 (TextView) this.findViewById(R.id.tvPoll), 10,
                 this.sliderValues, 0);
 
+        this.serverBtn = (Button) findViewById(R.id.btnServer);
+        this.serverBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Button btn = (Button) view;
+                if(MainActivity.this.service.isServerStarted()) {
+                    MainActivity.this.stopServer();
+                    btn.setText(R.string.btn_server_stopped);
+                } else {
+                    MainActivity.this.startServer();
+                    btn.setText(R.string.btn_server_started);
+                }
+            }
+        });
+
         this.pollingBtn = (Button) findViewById(R.id.btnPolling);
         this.pollingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Button btn = (Button) view;
-                if (MainActivity.this.isServerRunning()) {
-                    MainActivity.this.stopServer();
+                if (MainActivity.this.service.isPollingStarted()) {
+                    MainActivity.this.stopPolling();
                     btn.setText(R.string.btn_state_stopped);
                 } else {
-                    MainActivity.this.startServer();
+                    MainActivity.this.startPolling();
                     btn.setText(R.string.btn_state_started);
                 }
             }
@@ -100,16 +115,26 @@ public class MainActivity extends AppCompatActivity implements Observer {
     }
 
     public void startServer() {
-        if (!this.service.isStarted()) {
+        if (!this.service.isServerStarted()) {
             this.startService();
         }
-        this.service.start(12345, this.pollSlider.getValue());
+        this.service.startServer(12345, this.pollSlider.getValue());
         this.synchronize();
     }
 
     public void stopServer() {
-        this.service.stop();
+        this.service.stopServer();
         this.synchronize();
+    }
+
+    public void startPolling() {
+        this.service.startPolling(12345, this.pollSlider.getValue());
+        synchronize();
+    }
+
+    public void stopPolling() {
+        this.service.stopPolling();
+        synchronize();
     }
 
     public void startService() {
@@ -132,27 +157,41 @@ public class MainActivity extends AppCompatActivity implements Observer {
         this.service.setTimeout(value);
     }
 
-    public Boolean isServerRunning() {
-        return this.service.isStarted();
-    }
-
     public void synchronize() {
         this.pollingBtn.setEnabled(true);
+        this.serverBtn.setEnabled(true);
         this.serviceBtn.setText(R.string.btn_service_started);
         if (!this.bound) {
             this.stateView.setText(R.string.state_connecting);
             this.pollingBtn.setText(R.string.btn_state_stopped);
+            this.serverBtn.setText(R.string.btn_server_stopped);
             if (this.pollingBtn.isEnabled()) {
                 this.pollingBtn.setEnabled(false);
             }
+            if (this.serviceBtn.isEnabled()) {
+                this.serverBtn.setEnabled(false);
+            }
             this.serviceBtn.setText(R.string.btn_service_stopped);
-        } else if (this.service.isStarted()) {
-            this.stateView.setText(R.string.state_started);
-            this.pollSlider.setValue(this.service.getTimeout());
-            this.pollingBtn.setText(R.string.btn_state_started);
         } else {
-            this.stateView.setText(R.string.state_stopped);
-            this.pollingBtn.setText(R.string.btn_state_stopped);
+            if (this.service.isServiceStarted()) {
+                this.serverBtn.setText(R.string.btn_server_started);
+            } else {
+                this.serviceBtn.setText(R.string.btn_service_stopped);
+            }
+            if(this.service.isServerStarted()) {
+                this.stateView.setText(R.string.server_started);
+                this.serverBtn.setText(R.string.btn_server_started);
+                this.pollSlider.setValue(this.service.getTimeout());
+            } else {
+                this.serverBtn.setText(R.string.btn_server_stopped);
+                this.stateView.setText(R.string.server_stopped);
+            }
+            if(this.service.isPollingStarted()) {
+                this.stateView.setText(R.string.state_started);
+                this.pollingBtn.setText(R.string.btn_state_started);
+            } else {
+                this.pollingBtn.setText(R.string.btn_state_stopped);
+            }
         }
     }
 
@@ -247,6 +286,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
     private TextView connectionView;
     private Button pollingBtn;
     private Button serviceBtn;
+    private Button serverBtn;
     private Button statisticsBtn;
     private Intent serviceIntent;
     private boolean bound = false;
