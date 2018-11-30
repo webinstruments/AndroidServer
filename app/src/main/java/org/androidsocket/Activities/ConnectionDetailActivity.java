@@ -101,11 +101,13 @@ public class ConnectionDetailActivity extends AppCompatActivity implements Obser
             LogManager.getLogger().warning("Connection erased");
             finish();
         }
-        this.addressText.setText(this.connection.getRemoteAddress().replace("/", "") + ":" + this.connection.getRemotePort());
+        this.addressText.setText(this.connection.getFullRemoteAddress());
         this.dateTimeText.setText(this.connection.getDateTime("dd.MM.yyyy HH:mm:ss"));
         this.pingsText.setText(Long.toString(this.connection.getPingCount()));
-        this.missesText.setText(Long.toString(this.connection.getMisses()));
-        double percentage = this.connection.getPingCount() != 0 ? (this.connection.getPingCount() - this.connection.getMisses()) / (double) this.connection.getPingCount() * 100 : 0;
+        this.missesText.setText(Long.toString(this.connection.getMissesCount()));
+        double percentage = this.connection.getPingCount() != 0 ?
+                (this.connection.getPingCount() - this.connection.getMissesCount()) / (double) this.connection.getPingCount() * 100
+                : 0;
         DecimalFormat df = new DecimalFormat("#.00");
         this.statisticsText.setText(df.format(percentage));
         this.averageText.setText(df.format(this.connection.getAverageDelay()) + " ms");
@@ -145,9 +147,9 @@ public class ConnectionDetailActivity extends AppCompatActivity implements Obser
     public String[] getRowContent(Object rowData) {
         Latency l = (Latency) rowData;
         return new String[]{
-                Long.toString(l.latency),
-                l.serviceName,
-                l.strength
+                Long.toString(l.getLatency()),
+                l.getServiceName(),
+                l.getSignalStrength()
         };
     }
 

@@ -87,10 +87,10 @@ public class ConnectionsActivity extends AppCompatActivity implements Observer, 
         ActiveConnection data = (ActiveConnection) rowData;
         DecimalFormat df = new DecimalFormat("#.00");
         return new String[] {
-                data.getRemoteAddress().replace("/", "") + ':' + data.getRemotePort(),
+                data.getFullRemoteAddress(),
                 df.format(data.getAverageDelay()),
                 Long.toString(data.getPingCount()),
-                Long.toString(data.getMisses()),
+                Long.toString(data.getMissesCount()),
                 data.getDateTime("HH:mm:ss"),
         };
     }

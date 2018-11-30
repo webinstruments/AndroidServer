@@ -57,13 +57,16 @@ public class WSUtils {
         File file = new File(outputDirectory, filename);
         FileOutputStream fStream = new FileOutputStream(file, true);
 
+        String delimiter = ";";
         for(int i = 0; i < connections.size(); ++i) {
+            writeLine(fStream, delimiter, "RemoteAddress", "DateTime");
+            ActiveConnection conn = connections.get(i);
+            writeLine(fStream, delimiter, conn.getFullRemoteAddress(), conn.getDateTime("dd.MM.yyyy HH:mm:ss"));
             ArrayList<Latency> latencies = connections.get(i).getLatencies();
             for(int j = 0; j < latencies.size(); ++j) {
                 Latency latencyData = latencies.get(j);
-                String lineFormat = String.format("%s;%s;%s\r\n",
-                        latencyData.latency, latencyData.serviceName, latencyData.strength);
-                fStream.write(lineFormat.getBytes());
+                writeLine(fStream, delimiter,
+                        latencyData.getLatency(), latencyData.getServiceName(), latencyData.getSignalStrength());
             }
         }
 
@@ -84,5 +87,16 @@ public class WSUtils {
                 f.delete();
             }
         }
+    }
+
+    private static void writeLine(FileOutputStream stream, String delimitter, Object ...args) throws IOException {
+        String line = "";
+        for(int i = 0; i < args.length; ++i) {
+            if(i < args.length - 1)
+                line += args[i] + delimitter;
+            else
+                line += args[i] + "\r\n";
+        }
+        stream.write(line.getBytes());
     }
 }

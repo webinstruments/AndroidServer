@@ -32,7 +32,7 @@ public class ActiveConnection extends SignalObserver {
         this.remoteAddress = socket.getRemoteSocketAddress().getAddress().toString();
         this.remotePort = socket.getRemoteSocketAddress().getPort();
         this.latencySum = 0L;
-        this.misses = 0L;
+        this.misses = new ArrayList<>();
         this.minLatency = 0L;
         this.maxLatency = 0L;
     }
@@ -49,7 +49,7 @@ public class ActiveConnection extends SignalObserver {
     }
 
     public long getPingCount() {
-        return this.latencies.size() + this.misses;
+        return this.latencies.size() + this.misses.size();
     }
 
     public double getAverageDelay() {
@@ -80,12 +80,17 @@ public class ActiveConnection extends SignalObserver {
         return this.remotePort;
     }
 
-    public long addMiss() {
-        return ++this.misses;
+    public String getFullRemoteAddress() {
+        return this.getRemoteAddress().replace("/", "") + ":" + this.getRemotePort();
     }
 
-    public long getMisses() {
-        return this.misses;
+    public long addMiss() {
+        misses.add(new Miss(super.signalType, super.signalStrength));
+        return this.misses.size();
+    }
+
+    public long getMissesCount() {
+        return this.misses.size();
     }
 
     public long getMinLatency() {
@@ -108,6 +113,6 @@ public class ActiveConnection extends SignalObserver {
     private int remotePort;
     private String localAddress;
     private String remoteAddress;
-    private long misses;
+    private ArrayList<Miss> misses;
     private ArrayDeque<Latency> latencies;
 }
